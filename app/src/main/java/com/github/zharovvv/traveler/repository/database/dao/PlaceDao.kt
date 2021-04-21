@@ -9,6 +9,9 @@ interface PlaceDao {
     @Query("SELECT * FROM place_table WHERE city_id=:cityId")
     fun getByCityId(cityId: Long): List<PlaceEntity>
 
+    @Query("SELECT * FROM place_table WHERE id=:placeId")
+    fun getById(placeId: Long): PlaceEntity?
+
     @Insert
     fun insert(placeEntity: PlaceEntity): Long
 

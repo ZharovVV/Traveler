@@ -4,6 +4,7 @@ import java.io.Serializable
 
 data class Route(
     val id: Long,
+    val cityId: Long,
     val name: String,
     val description: String,
     val places: List<Place>

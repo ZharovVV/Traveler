@@ -5,5 +5,5 @@ import io.reactivex.Observable
 
 interface CityDataRepository {
 
-    fun getCityData(): Observable<List<City>>
+    fun getCityData(lastCityId: Long, limit: Long): Observable<List<City>>
 }

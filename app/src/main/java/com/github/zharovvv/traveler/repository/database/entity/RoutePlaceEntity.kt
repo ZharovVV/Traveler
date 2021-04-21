@@ -24,10 +24,10 @@ import androidx.room.PrimaryKey
     ]
 )
 data class RoutePlaceEntity(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long,
     @ColumnInfo(name = "route_id")
     var routeId: Long,
     @ColumnInfo(name = "place_id")
-    var placeId: Long
+    var placeId: Long,
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )

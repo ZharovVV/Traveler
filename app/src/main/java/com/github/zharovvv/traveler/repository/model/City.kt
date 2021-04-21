@@ -6,5 +6,6 @@ data class City(
     val id: Long,
     val name: String,
     val location: String,
-    val description: String
+    val description: String,
+    val imageUrl: String
 ) : Serializable

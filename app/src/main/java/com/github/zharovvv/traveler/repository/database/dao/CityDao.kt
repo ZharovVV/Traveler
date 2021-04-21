@@ -6,8 +6,15 @@ import com.github.zharovvv.traveler.repository.database.entity.CityEntity
 @Dao
 interface CityDao {
 
+    @Deprecated("Сильно загружает БД")
     @Query("SELECT * FROM city_table")
     fun get(): List<CityEntity>
+
+    @Query("SELECT * FROM city_table WHERE id > :lastCityId ORDER BY id LIMIT :limit")
+    fun get(lastCityId: Long, limit: Long): List<CityEntity>
+
+    @Query("SELECT * FROM city_table WHERE id=:cityId")
+    fun get(cityId: Long): CityEntity?
 
     @Insert
     fun insert(cityEntity: CityEntity): Long

@@ -11,7 +11,7 @@ interface RoutePlaceDao {
     fun getPlacesByRouteId(routeId: Long): List<PlaceEntity>
 
     @Query("SELECT * FROM route_place_table WHERE route_id = :routeId AND place_id = :placeId")
-    fun getRoutePlaceEntityByIds(routeId: Long, placeId: Long): RoutePlaceEntity
+    fun getRoutePlaceEntityByIds(routeId: Long, placeId: Long): RoutePlaceEntity?
 
     @Insert
     fun insert(routePlaceEntity: RoutePlaceEntity): Long
