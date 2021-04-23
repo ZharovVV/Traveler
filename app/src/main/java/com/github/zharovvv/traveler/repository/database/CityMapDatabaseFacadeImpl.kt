@@ -3,7 +3,6 @@ package com.github.zharovvv.traveler.repository.database
 import com.github.zharovvv.traveler.repository.database.converter.CityEntityConverter
 import com.github.zharovvv.traveler.repository.database.converter.PlaceEntityConverter
 import com.github.zharovvv.traveler.repository.database.converter.RouteEntityConverter
-import com.github.zharovvv.traveler.repository.database.entity.PlaceEntity
 import com.github.zharovvv.traveler.repository.model.City
 import com.github.zharovvv.traveler.repository.model.CityMap
 import com.github.zharovvv.traveler.repository.model.Place
@@ -38,21 +37,22 @@ class CityMapDatabaseFacadeImpl(
     override fun insertCityMap(cityMap: CityMap) {
         travelerDatabase.runInTransaction {
             travelerDatabase.cityDao().insert(cityEntityConverter.convertToEntity(cityMap.city))
-            val placesEntitySet: MutableSet<PlaceEntity> = cityMap.places
-                .map { place ->
-                    placeEntityConverter.convertToEntity(place)
-                }.toMutableSet()
             val routeContainers = cityMap.routes
                 .map { route -> routeEntityConverter.convertToEntity(route) }
-            travelerDatabase.routeDao().insert(routeContainers.map { it.routeEntity })
+            travelerDatabase.routeDao().insert(
+                routeContainers.map { routeContainer -> routeContainer.routeEntity }
+            )
             travelerDatabase.placeDao().insert(
-                placesEntitySet.apply {
-                    addAll(
-                        routeContainers.flatMap {
-                            it.placeEntities
-                        }
-                    )
-                }.toList()
+                cityMap.places
+                    .map { place -> placeEntityConverter.convertToEntity(place) }
+                    .toMutableSet()
+                    .apply {
+                        addAll(
+                            routeContainers.flatMap {
+                                    routeContainer -> routeContainer.placeEntities
+                            }
+                        )
+                    }.toList()
             )
             travelerDatabase.routePlaceDao().insert(
                 routeContainers.flatMap { it.routePlaceEntities }
