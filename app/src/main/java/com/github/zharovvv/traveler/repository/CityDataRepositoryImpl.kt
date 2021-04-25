@@ -5,11 +5,13 @@ import com.github.zharovvv.traveler.repository.model.City
 import com.github.zharovvv.traveler.repository.network.TravelerApiService
 import io.reactivex.Observable
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class CityDataRepositoryImpl
 @Inject constructor(
+    @field:Named("travelerApiServiceStubImpl")
     private val travelerApiService: TravelerApiService,
     private val cityDatabaseFacade: CityDatabaseFacade
 ) : CityDataRepository {

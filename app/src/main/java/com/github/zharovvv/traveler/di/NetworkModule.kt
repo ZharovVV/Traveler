@@ -6,6 +6,7 @@ import com.github.zharovvv.traveler.TravelerApp
 import com.github.zharovvv.traveler.repository.network.CacheProvider
 import com.github.zharovvv.traveler.repository.network.Interceptors
 import com.github.zharovvv.traveler.repository.network.TravelerApiService
+import com.github.zharovvv.traveler.repository.network.TravelerApiServiceStubImpl
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -22,6 +23,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    @Named("travelerApiServiceReal")
     fun provideTravelerApiService(
         @Named("cacheControlHttpClient")
         httpClient: OkHttpClient
@@ -73,4 +75,11 @@ class NetworkModule {
         return TravelerApp.appContext
             .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
+
+
+    //<---------------------Stub Implementation---------------------------->
+    @Provides
+    @Singleton
+    @Named("travelerApiServiceStubImpl")
+    fun provideTravelerApiServiceStubImpl(): TravelerApiService = TravelerApiServiceStubImpl()
 }
