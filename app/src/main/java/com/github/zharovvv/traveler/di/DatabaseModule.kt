@@ -17,7 +17,7 @@ class DatabaseModule {
     @Singleton
     fun provideTravelerDatabase(): TravelerDatabase {
         return Room.databaseBuilder(
-            TravelerApp.appContext,
+            TravelerApp.getAppContext(),
             TravelerDatabase::class.java,
             "traveler_database"
         )

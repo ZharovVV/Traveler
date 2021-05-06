@@ -66,13 +66,13 @@ class NetworkModule {
     @Singleton
     @Named("cacheDir")
     fun provideCacheDir(): File {
-        return TravelerApp.appContext.cacheDir
+        return TravelerApp.getAppContext().cacheDir
     }
 
     @Provides
     @Singleton
     fun provideConnectivityManager(): ConnectivityManager {
-        return TravelerApp.appContext
+        return TravelerApp.getAppContext()
             .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
