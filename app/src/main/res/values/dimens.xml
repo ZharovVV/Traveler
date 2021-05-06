@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- font sizes -->
+    <dimen name="font_largest">36sp</dimen>
+    <dimen name="font_large">24sp</dimen>
+    <dimen name="font_normal">18sp</dimen>
+    <dimen name="font_small">14sp</dimen>
+
+    <!-- indents -->
+    <dimen name="indent_normal">16dp</dimen>
+    <dimen name="indent_small">8dp</dimen>
+</resources>

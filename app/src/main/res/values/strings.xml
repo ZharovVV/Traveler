@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Traveler</string>
+    <string name="cities">Города</string>
 </resources>
