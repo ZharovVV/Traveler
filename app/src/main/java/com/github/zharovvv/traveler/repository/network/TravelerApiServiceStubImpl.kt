@@ -7,6 +7,7 @@ import com.github.zharovvv.traveler.repository.model.Route
 import io.reactivex.Observable
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.NoSuchElementException
 
 class TravelerApiServiceStubImpl : TravelerApiService {
 
@@ -22,58 +23,58 @@ class TravelerApiServiceStubImpl : TravelerApiService {
 
 
     override fun getCities(lastCityId: String, limit: String): Observable<List<City>> {
-        return Observable.create<List<City>> { emitter ->
-            emitter.onNext(
-                CITIES.asSequence()
-                    .map { it.value }
-                    .sortedBy { it.id }
-                    .filter { it.id > lastCityId.toLong() && it.id <= lastCityId.toLong() + limit.toLong() }
-                    .toList()
-            )
+        return Observable
+            .create<List<City>> { emitter ->
+                emitter.onNext(
+                    CITIES.asSequence()
+                        .map { it.value }
+                        .sortedBy { it.id }
+                        .filter { it.id > lastCityId.toLong() && it.id <= lastCityId.toLong() + limit.toLong() }
+                        .toList()
+                )
 //            emitter.onError(IllegalArgumentException("test database"))
-        }
-            .delay(
-                DELAY, TimeUnit.MILLISECONDS
-            )
+            }
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     override fun getCityMap(cityId: String): Observable<CityMap> {
-        Thread.sleep(DELAY)
-        return Observable.just(
-            CITY_MAPS[cityId.toLong()]
-        )
+        return Observable
+            .just(CITY_MAPS[cityId.toLong()] ?: throw NoSuchElementException())
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     override fun getPlacesOfCity(cityId: String): Observable<List<Place>> {
-        Thread.sleep(DELAY)
-        return Observable.just(
-            PLACES.asSequence()
-                .filter { it.value.cityId == cityId.toLong() }
-                .map { it.value }
-                .toList()
-        )
+        return Observable
+            .just(
+                PLACES.asSequence()
+                    .filter { it.value.cityId == cityId.toLong() }
+                    .map { it.value }
+                    .toList()
+            )
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     override fun getRoutesOfCity(cityId: String): Observable<List<Route>> {
-        Thread.sleep(DELAY)
-        return Observable.just(
-            ROUTES.asSequence()
-                .filter { it.value.cityId == cityId.toLong() }
-                .map { it.value }
-                .toList()
-        )
+        return Observable
+            .just(
+                ROUTES.asSequence()
+                    .filter { it.value.cityId == cityId.toLong() }
+                    .map { it.value }
+                    .toList()
+            )
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     override fun getPlace(placeId: String): Observable<Place> {
-        Thread.sleep(DELAY)
-        return Observable.just(PLACES[placeId.toLong()])
+        return Observable
+            .just(PLACES[placeId.toLong()] ?: throw NoSuchElementException())
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     override fun getRoute(routeId: String): Observable<Route> {
-        Thread.sleep(DELAY)
-        return Observable.just(
-            ROUTES[routeId.toLong()]
-        )
+        return Observable
+            .just(ROUTES[routeId.toLong()] ?: throw NoSuchElementException())
+            .delay(DELAY, TimeUnit.MILLISECONDS)
     }
 
     class StubCityGenerator {
