@@ -9,4 +9,7 @@
     <!-- indents -->
     <dimen name="indent_normal">16dp</dimen>
     <dimen name="indent_small">8dp</dimen>
+
+    <!-- corner radius -->
+    <dimen name="corner_radius_normal">8dp</dimen>
 </resources>

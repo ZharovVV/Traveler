@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="163dp"
+    android:layout_marginStart="@dimen/indent_normal"
+    android:layout_marginTop="@dimen/indent_small"
+    android:layout_marginEnd="@dimen/indent_normal"
+    android:layout_marginBottom="@dimen/indent_small"
+    app:cardCornerRadius="@dimen/corner_radius_normal"
+    app:cardElevation="4dp">
+
+    <ImageView
+        android:id="@+id/city_image_view"
+        android:layout_width="134dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="134dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/city_title_text_view"
+            style="@style/title_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/indent_small" />
+
+        <com.github.zharovvv.traveler.ui.view.CustomEllipsizedTextView
+            android:id="@+id/city_short_description_text_view"
+            style="@style/description_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/indent_small"
+            android:paddingEnd="@dimen/indent_small"
+            android:paddingBottom="@dimen/indent_small" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

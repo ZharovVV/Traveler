@@ -6,6 +6,7 @@ import com.github.zharovvv.traveler.repository.model.Place
 import com.github.zharovvv.traveler.repository.model.Route
 import io.reactivex.Observable
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class TravelerApiServiceStubImpl : TravelerApiService {
 
@@ -21,14 +22,19 @@ class TravelerApiServiceStubImpl : TravelerApiService {
 
 
     override fun getCities(lastCityId: String, limit: String): Observable<List<City>> {
-        Thread.sleep(DELAY)
-        return Observable.just(
-            CITIES.asSequence()
-                .map { it.value }
-                .sortedBy { it.id }
-                .filter { it.id > lastCityId.toLong() && it.id <= lastCityId.toLong() + limit.toLong() }
-                .toList()
-        )
+        return Observable.create<List<City>> { emitter ->
+            emitter.onNext(
+                CITIES.asSequence()
+                    .map { it.value }
+                    .sortedBy { it.id }
+                    .filter { it.id > lastCityId.toLong() && it.id <= lastCityId.toLong() + limit.toLong() }
+                    .toList()
+            )
+//            emitter.onError(IllegalArgumentException("test database"))
+        }
+            .delay(
+                DELAY, TimeUnit.MILLISECONDS
+            )
     }
 
     override fun getCityMap(cityId: String): Observable<CityMap> {
@@ -74,7 +80,7 @@ class TravelerApiServiceStubImpl : TravelerApiService {
 
         companion object {
             fun generate(): Map<Long, City> {
-                val longRange: LongRange = 0L..50L
+                val longRange: LongRange = 0L..200L
                 return longRange.asSequence()
                     .map { id -> generateCity(id) }
                     .associateBy { city -> city.id }
