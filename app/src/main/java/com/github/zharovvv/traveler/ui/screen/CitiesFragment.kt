@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.github.zharovvv.traveler.R
 import com.github.zharovvv.traveler.ui.AndroidXMvpAppCompatFragment
@@ -39,7 +39,10 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(), CitiesMvpView {
         cityListAdapter = CityListAdapter { widget -> citiesPresenter.onClickCity(widget) }
         paginationRecyclerView.apply {
             limit = 10
-            layoutManager = LinearLayoutManager(view.context)
+            layoutManager = GridLayoutManager(
+                view.context,
+                view.context.resources.getInteger(R.integer.grid_column_count)
+            )
             adapter = cityListAdapter
         }
         paginationRecyclerView.addOnNewPageRequiredListener { page ->
