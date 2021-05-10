@@ -21,14 +21,13 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     data class Page<Item>(val lastItem: Item, val limit: Int)
-    private enum class PageLocation {
-        TOP, BOTTOM
+    private enum class LoadingIndicatorState {
+        HIDE, SHOW
     }
 
     private enum class PaginationState {
-        READY_TO_LOADING,
-        LOADING,
-        ALL_PAGES_LOADED
+        PAGE_LOADED,
+        PAGE_LOADING,
     }
 
     companion object {
@@ -36,16 +35,16 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
     }
 
     var limit = DEFAULT_LIMIT
-    private var paginationState: PaginationState = PaginationState.READY_TO_LOADING
+    private var paginationState: PaginationState = PaginationState.PAGE_LOADED
     private val compositeDisposable = CompositeDisposable()
     private val scrollPageChannel: PublishSubject<Page<Item>> = PublishSubject.create()
-    private val pageLocationChannel: PublishSubject<PageLocation> =
-        PublishSubject.create<PageLocation>()
+    private val loadingIndicatorStateChannel: PublishSubject<LoadingIndicatorState> =
+        PublishSubject.create<LoadingIndicatorState>()
             .apply {
                 compositeDisposable += this.distinctUntilChanged()
                     .subscribe { pageLocation ->
                         when (pageLocation) {
-                            PageLocation.TOP -> {
+                            LoadingIndicatorState.HIDE -> {
                                 progressBar.visibility = View.INVISIBLE
                             }
                             else -> {
@@ -65,40 +64,26 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
                     adapter ?: throw IllegalArgumentException("Adapter is not defined!")
                 val updatePosition = currentAdapter.itemCount - 1 - (limit / 2)
                 val realLastItemPosition = currentAdapter.itemCount - 1
+
                 @Suppress("UNCHECKED_CAST")
                 if (lastVisibleItemPosition >= updatePosition) {
+                    currentAdapter as ListAdapter<Item, *>
+                    scrollPageChannel.onNext(
+                        Page(currentAdapter.currentList[realLastItemPosition], limit)
+                    )
+                }
+                if (lastVisibleItemPosition < realLastItemPosition) {
+                    loadingIndicatorStateChannel.onNext(LoadingIndicatorState.HIDE)
+                }
+                if (lastVisibleItemPosition >= realLastItemPosition) {
                     when (paginationState) {
-                        PaginationState.READY_TO_LOADING -> {
-                            currentAdapter as ListAdapter<Item, *>
-                            scrollPageChannel.onNext(
-                                Page(currentAdapter.currentList[realLastItemPosition], limit)
-                            )
-                            setPadding( //TODO некорректное поведение при пересоздании экрана
-                                0,
-                                8.dpToPx(),
-                                0,
-                                progressBar.height + 8.dpToPx() + 16.dpToPx()
-                            )
-                        }
-                        PaginationState.LOADING -> {
-                            setPadding(
-                                0,
-                                8.dpToPx(),
-                                0,
-                                progressBar.height + 8.dpToPx() + 16.dpToPx()
-                            )
+                        PaginationState.PAGE_LOADING -> {
+                            loadingIndicatorStateChannel.onNext(LoadingIndicatorState.SHOW)
                         }
                         else -> {
-                            //doNothing
+                            loadingIndicatorStateChannel.onNext(LoadingIndicatorState.HIDE)
+                            setPadding(0, 8.dpToPx(), 0, 8.dpToPx())
                         }
-                    }
-                }
-
-                if (paginationState == PaginationState.LOADING) {
-                    if (lastVisibleItemPosition >= realLastItemPosition) {
-                        pageLocationChannel.onNext(PageLocation.BOTTOM)
-                    } else {
-                        pageLocationChannel.onNext(PageLocation.TOP)
                     }
                 }
             }
@@ -118,6 +103,8 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
         }
     }
 
+    //При повороте экрана порядок вызова методов будет следующим:
+    //constructor -> (методы ViewState, которые были добавлены в очередь) -> onAttachedToWindow
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         initLoadingIndicator()
@@ -154,26 +141,24 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
             .distinctUntilChanged()
             .subscribe { page ->
                 onNewPageRequiredListener(page)
+                setPadding(0, 8.dpToPx(), 0, progressBar.height + 8.dpToPx() + 16.dpToPx())
             }
     }
 
     fun onStartPageLoading() {
-        paginationState = PaginationState.LOADING
+        paginationState = PaginationState.PAGE_LOADING
     }
 
     fun onNewPageLoaded() {
-        if (paginationState == PaginationState.LOADING) {//TODO при пересоздании прогрессбар почему-то ещё не проинициализирован
-            progressBar.visibility = View.INVISIBLE
-        }
-        paginationState = PaginationState.READY_TO_LOADING
+        paginationState = PaginationState.PAGE_LOADED
     }
 
     fun onAllPagesLoaded() {
-        if (paginationState == PaginationState.LOADING) {//TODO при пересоздании прогрессбар почему-то ещё не проинициализирован
-            setPadding(0, 8.dpToPx(), 0, 8.dpToPx())
-            progressBar.visibility = View.INVISIBLE
+        paginationState = PaginationState.PAGE_LOADED
+        if (this::progressBar.isInitialized) {
+            loadingIndicatorStateChannel.onNext(LoadingIndicatorState.HIDE)
         }
-        paginationState = PaginationState.ALL_PAGES_LOADED
+        setPadding(0, 8.dpToPx(), 0, 8.dpToPx())
         compositeDisposable.dispose()
     }
 
