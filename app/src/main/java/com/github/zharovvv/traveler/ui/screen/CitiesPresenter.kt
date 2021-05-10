@@ -1,6 +1,5 @@
 package com.github.zharovvv.traveler.ui.screen
 
-import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.github.zharovvv.traveler.TravelerApp
 import com.github.zharovvv.traveler.repository.CityDataRepository
@@ -16,13 +15,14 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
 
     init {
         TravelerApp.getAppComponent().injectCitiesPresenter(this)
-        Log.i("dagger", "inject $cityDataRepository")  //TODO delete me
     }
 
     @Inject
     internal lateinit var cityDataRepository: CityDataRepository
 
-    private val currentCityWidgetList: MutableList<Widget> = mutableListOf()
+    //Не список из-за кейса: запрос данных -> поворот экрана (после пересоздания запрос повторяется)
+    // -> приходит ответ на первый запрос, затем приходит второй запрос с такими же данными
+    private val currentCityWidgetSet: MutableSet<Widget> = mutableSetOf()
     private val onDataLoadingCompletedConsumer: (List<City>) -> Unit =
         { cityList ->
             val newCityWidgets: List<Widget> = cityList
@@ -34,15 +34,19 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
                         city.imageUrl
                     )
                 }
-            currentCityWidgetList.addAll(newCityWidgets)
-            viewState.updateCities(currentCityWidgetList.toList())
+            currentCityWidgetSet.addAll(newCityWidgets)
+            if (newCityWidgets.isNotEmpty()) {
+                viewState.updateCities(currentCityWidgetSet.toList())
+                viewState.hideLoadingIndicator()
+            } else {
+                viewState.allCitiesLoaded()
+            }
         }
 
     fun initLoad() {
         cityDataRepository.getCityData(0L, 20L)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .filter { cityList -> cityList.isNotEmpty() }
             .subscribe(
                 onDataLoadingCompletedConsumer,
                 { error: Throwable ->
@@ -55,13 +59,13 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
         cityDataRepository.getCityData(lastCityWidget.id.toLong(), limit.toLong())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .filter { cityList -> cityList.isNotEmpty() }
             .subscribe(
                 onDataLoadingCompletedConsumer,
                 { error: Throwable ->
 
                 }
             ).keep()
+        viewState.showLoadingIndicator()
     }
 
     fun onClickCity(widget: Widget) {

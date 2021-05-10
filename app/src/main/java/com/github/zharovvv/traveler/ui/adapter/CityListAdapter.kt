@@ -57,8 +57,6 @@ class CityListAdapter(
         }
     }
 
-    private val currentCityWidgetList: MutableList<Widget> = mutableListOf()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityItemHolder {
         Log.i("recycler_view", "CityListAdapter#onCreateViewHolder")
         return CityItemHolder(

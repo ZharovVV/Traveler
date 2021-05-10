@@ -9,4 +9,13 @@ interface CitiesMvpView : MvpView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun updateCities(cityWidgetList: List<Widget>)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun showLoadingIndicator()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun hideLoadingIndicator()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun allCitiesLoaded()
 }

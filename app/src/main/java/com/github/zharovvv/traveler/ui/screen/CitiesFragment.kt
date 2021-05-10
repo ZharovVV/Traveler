@@ -63,6 +63,18 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(), CitiesMvpView {
         cityListAdapter.submitCityWidgets(cityWidgetList)
     }
 
+    override fun showLoadingIndicator() {
+        paginationRecyclerView.onStartPageLoading()
+    }
+
+    override fun hideLoadingIndicator() {
+        paginationRecyclerView.onNewPageLoaded()
+    }
+
+    override fun allCitiesLoaded() {
+        paginationRecyclerView.onAllPagesLoaded()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         paginationRecyclerView.onDestroy()
