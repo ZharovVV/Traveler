@@ -67,10 +67,12 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
 
                 @Suppress("UNCHECKED_CAST")
                 if (lastVisibleItemPosition >= updatePosition) {
-                    currentAdapter as ListAdapter<Item, *>
-                    scrollPageChannel.onNext(
-                        Page(currentAdapter.currentList[realLastItemPosition], limit)
-                    )
+                    if (paginationState != PaginationState.PAGE_LOADING) {
+                        currentAdapter as ListAdapter<Item, *>
+                        scrollPageChannel.onNext(
+                            Page(currentAdapter.currentList[realLastItemPosition], limit)
+                        )
+                    }
                 }
                 if (lastVisibleItemPosition < realLastItemPosition) {
                     loadingIndicatorStateChannel.onNext(LoadingIndicatorState.HIDE)
