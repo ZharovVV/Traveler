@@ -57,6 +57,7 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
     private lateinit var progressBar: ProgressBar
 
     init {
+        initLoadingIndicator()
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val lastVisibleItemPosition = getLastVisibleItemPosition()
@@ -105,33 +106,35 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
         }
     }
 
+    //TODO Рассмотреть возможность использования ItemDecorator/ItemAnimator для размещения логики показа индикотора загрузки.
+    private fun initLoadingIndicator() {
+        progressBar = ProgressBar(context)
+        progressBar.indeterminateTintList = ColorStateList.valueOf(
+            resources.getColor(R.color.blue, null)
+        )
+        progressBar.layoutParams = ViewGroup.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
+        progressBar.visibility = View.INVISIBLE
+    }
+
     //При повороте экрана порядок вызова методов будет следующим:
     //constructor -> (методы ViewState, которые были добавлены в очередь) -> onAttachedToWindow
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        initLoadingIndicator()
+        attachLoadingIndicatorToParentContainer()
     }
 
-    //TODO Рассмотреть возможность использования ItemDecorator/ItemAnimator для размещения логики показа индикотора загрузки.
-    private fun initLoadingIndicator() {
+    private fun attachLoadingIndicatorToParentContainer() {
         when (val parentContainer = parent) {
             is ConstraintLayout -> {
-                progressBar = ProgressBar(context)
-                progressBar.indeterminateTintList = ColorStateList.valueOf(
-                    resources.getColor(R.color.blue, null)
-                )
-                val constraintLayoutParams = ConstraintLayout.LayoutParams(
-                    ViewGroup.LayoutParams(
-                        LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT
-                    )
-                )
+                val constraintLayoutParams = ConstraintLayout.LayoutParams(progressBar.layoutParams)
                 constraintLayoutParams.bottomToBottom = 0
                 constraintLayoutParams.startToStart = 0
                 constraintLayoutParams.endToEnd = 0
                 constraintLayoutParams.setMargins(0, 8.dpToPx(), 0, 16.dpToPx())
                 progressBar.layoutParams = constraintLayoutParams
-                progressBar.visibility = View.INVISIBLE
                 parentContainer.addView(progressBar)
             }
             else -> throw IllegalArgumentException("RecyclerView parent is not ConstraintLayout! $parentContainer")
@@ -143,12 +146,12 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
             .distinctUntilChanged()
             .subscribe { page ->
                 onNewPageRequiredListener(page)
-                setPadding(0, 8.dpToPx(), 0, progressBar.height + 8.dpToPx() + 16.dpToPx())
             }
     }
 
     fun onStartPageLoading() {
         paginationState = PaginationState.PAGE_LOADING
+        setPadding(0, 8.dpToPx(), 0, 48.dpToPx() + 8.dpToPx() + 16.dpToPx())
     }
 
     fun onNewPageLoaded() {

@@ -18,7 +18,7 @@ class TravelerApiServiceStubImpl : TravelerApiService {
         private val CITY_MAPS: Map<Long, CityMap> =
             StubCityMapGenerator.generate(CITIES, PLACES, ROUTES)
 
-        private const val DELAY = 3000L
+        private const val DELAY = 1000L
     }
 
 
