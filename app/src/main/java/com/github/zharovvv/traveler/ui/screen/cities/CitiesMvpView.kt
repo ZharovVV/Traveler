@@ -1,21 +1,22 @@
-package com.github.zharovvv.traveler.ui.screen
+package com.github.zharovvv.traveler.ui.screen.cities
 
 import com.arellomobile.mvp.MvpView
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
+import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 import com.github.zharovvv.traveler.ui.model.Widget
 
+@StateStrategyType(AddToEndSingleStrategy::class)
 interface CitiesMvpView : MvpView {
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
     fun updateCities(cityWidgetList: List<Widget>)
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showLoadingIndicator()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
     fun hideLoadingIndicator()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
     fun allCitiesLoaded()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun openCity(cityWidget: Widget)
 }

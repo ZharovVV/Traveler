@@ -2,7 +2,7 @@ package com.github.zharovvv.traveler.ui
 
 import android.os.Bundle
 import com.github.zharovvv.traveler.R
-import com.github.zharovvv.traveler.ui.screen.CitiesFragment
+import com.github.zharovvv.traveler.ui.screen.cities.CitiesFragment
 
 class MainActivity : AndroidXMvpAppCompatActivity() {
 
@@ -11,7 +11,8 @@ class MainActivity : AndroidXMvpAppCompatActivity() {
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, CitiesFragment(), "mainFragment")
+                .add(R.id.main_container,
+                    CitiesFragment(), "mainFragment")
                 .commit()
         }
     }

@@ -1,6 +1,8 @@
 package com.github.zharovvv.traveler.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arellomobile.mvp.MvpDelegate
 
@@ -81,4 +83,14 @@ abstract class AndroidXMvpAppCompatFragment : Fragment() {
             }
             return mMvpDelegate!!
         }
+
+    @SuppressLint("DefaultLocale")
+    fun <F : AndroidXMvpAppCompatFragment> F.transitionTo(rootContainer: ViewGroup, fragment: F) {
+        val fragmentTag: String = fragment.javaClass.simpleName.decapitalize()
+        this.requireFragmentManager().beginTransaction()
+//            .setCustomAnimations()
+            .replace(rootContainer.id, fragment, fragmentTag)
+            .addToBackStack(null)
+            .commit()
+    }
 }

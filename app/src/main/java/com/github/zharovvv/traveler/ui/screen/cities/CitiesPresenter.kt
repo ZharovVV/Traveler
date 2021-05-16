@@ -1,4 +1,4 @@
-package com.github.zharovvv.traveler.ui.screen
+package com.github.zharovvv.traveler.ui.screen.cities
 
 import com.arellomobile.mvp.InjectViewState
 import com.github.zharovvv.traveler.TravelerApp
@@ -68,7 +68,7 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
         viewState.showLoadingIndicator()
     }
 
-    fun onClickCity(widget: Widget) {
-        //TODO
+    fun onClickCity(cityWidget: Widget) {
+        viewState.openCity(cityWidget)
     }
 }

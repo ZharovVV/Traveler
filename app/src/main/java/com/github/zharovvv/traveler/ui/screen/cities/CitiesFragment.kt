@@ -1,4 +1,4 @@
-package com.github.zharovvv.traveler.ui.screen
+package com.github.zharovvv.traveler.ui.screen.cities
 
 import android.os.Bundle
 import android.util.Log
@@ -11,14 +11,18 @@ import com.github.zharovvv.traveler.R
 import com.github.zharovvv.traveler.ui.AndroidXMvpAppCompatFragment
 import com.github.zharovvv.traveler.ui.adapter.CityListAdapter
 import com.github.zharovvv.traveler.ui.model.Widget
+import com.github.zharovvv.traveler.ui.screen.city.map.CityMapFragment
 import com.github.zharovvv.traveler.ui.view.PaginationRecyclerView
 
-class CitiesFragment : AndroidXMvpAppCompatFragment(), CitiesMvpView {
+class CitiesFragment : AndroidXMvpAppCompatFragment(),
+    CitiesMvpView {
 
     @InjectPresenter
     internal lateinit var citiesPresenter: CitiesPresenter
     private lateinit var paginationRecyclerView: PaginationRecyclerView<Widget>
     private lateinit var cityListAdapter: CityListAdapter
+    private lateinit var rootContainer: ViewGroup
+    private val cityMapFragment: CityMapFragment = CityMapFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +35,13 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(), CitiesMvpView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.i("fragment_lifecycle", "citiesFragment#onCreateView")
+        container?.let { rootContainer = it }
         return inflater.inflate(R.layout.fragment_cities, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.i("fragment_lifecycle", "citiesFragment#onViewCreated")
         paginationRecyclerView = view.findViewById(R.id.cities_recycler_view)
         cityListAdapter = CityListAdapter { widget -> citiesPresenter.onClickCity(widget) }
         paginationRecyclerView.apply {
@@ -55,27 +62,37 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(), CitiesMvpView {
 
     override fun updateCities(cityWidgetList: List<Widget>) {
         val description = if (cityWidgetList.isNotEmpty()) {
-            "updateCities; cityWidgetCount: ${cityWidgetList.size}; first city: ${cityWidgetList[0].title}; last city: ${cityWidgetList[cityWidgetList.size - 1].title}"
+            "CitiesMvpView#updateCities; cityWidgetCount: ${cityWidgetList.size}; first city: ${cityWidgetList[0].title}; last city: ${cityWidgetList[cityWidgetList.size - 1].title}"
         } else {
-            "updateCities; empty list"
+            "CitiesMvpView#updateCities; empty list"
         }
         Log.i("Moxy", description)//TODO delete me
         cityListAdapter.submitCityWidgets(cityWidgetList)
     }
 
     override fun showLoadingIndicator() {
+        Log.i("Moxy", "CitiesMvpView#showLoadingIndicator")
         paginationRecyclerView.onStartPageLoading()
     }
 
     override fun hideLoadingIndicator() {
+        Log.i("Moxy", "CitiesMvpView#hideLoadingIndicator")
         paginationRecyclerView.onNewPageLoaded()
     }
 
     override fun allCitiesLoaded() {
+        Log.i("Moxy", "CitiesMvpView#openCity")
         paginationRecyclerView.onAllPagesLoaded()
     }
 
+    override fun openCity(cityWidget: Widget) {
+        Log.i("Moxy", "CitiesMvpView#openCity")
+        cityMapFragment.sourceCityWidget = cityWidget
+        transitionTo(rootContainer, cityMapFragment)
+    }
+
     override fun onDestroy() {
+        Log.i("fragment_lifecycle", "citiesFragment#onDestroy")
         super.onDestroy()
         paginationRecyclerView.onDestroy()
     }
