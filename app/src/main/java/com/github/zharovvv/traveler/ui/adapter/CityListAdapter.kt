@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +15,7 @@ import com.github.zharovvv.traveler.R
 import com.github.zharovvv.traveler.ui.model.Widget
 
 class CityListAdapter(
-    private val onClick: (Widget) -> Unit
+    private val onClick: (Widget, View) -> Unit
 ) : ListAdapter<Widget, CityListAdapter.CityItemHolder>(CITY_WIDGET_ITEM_DIFF) {
 
     companion object {
@@ -31,7 +32,7 @@ class CityListAdapter(
 
     class CityItemHolder(
         itemView: View,
-        private val onClick: (Widget) -> Unit
+        private val onClick: (Widget, View) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val imageView: ImageView = itemView.findViewById(R.id.city_image_view)
         private val tvTitle: TextView = itemView.findViewById(R.id.city_title_text_view)
@@ -41,7 +42,7 @@ class CityListAdapter(
 
         init {
             itemView.setOnClickListener {
-                currentCityWidget?.let { onClick(it) }
+                currentCityWidget?.let { onClick(it, imageView) }
             }
         }
 
@@ -54,6 +55,7 @@ class CityListAdapter(
                     .load(it)
                     .into(imageView)
             }
+            ViewCompat.setTransitionName(imageView, cityWidget.id)
         }
     }
 

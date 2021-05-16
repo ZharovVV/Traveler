@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.github.zharovvv.traveler.R
@@ -41,9 +42,10 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
         Log.i("fragment_lifecycle", "citiesFragment#onViewCreated")
         paginationRecyclerView = view.findViewById(R.id.cities_recycler_view)
-        cityListAdapter = CityListAdapter { widget -> citiesPresenter.onClickCity(widget) }
+        cityListAdapter = CityListAdapter { widget, sharedView -> openCity(widget, sharedView) }
         paginationRecyclerView.apply {
             limit = 10
             layoutManager = GridLayoutManager(
@@ -58,6 +60,7 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
         if (savedInstanceState == null) {
             citiesPresenter.initLoad()
         }
+        view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
     override fun updateCities(cityWidgetList: List<Widget>) {
@@ -85,15 +88,19 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
         paginationRecyclerView.onAllPagesLoaded()
     }
 
-    override fun openCity(cityWidget: Widget) {
-        Log.i("Moxy", "CitiesMvpView#openCity")
+    private fun openCity(cityWidget: Widget, sharedElement: View) {
         cityMapFragment.sourceCityWidget = cityWidget
-        transitionTo(rootContainer, cityMapFragment)
+        prepareTransitionTo(rootContainer, cityMapFragment)
+            .setReorderingAllowed(true)
+            .addSharedElement(sharedElement, "city_image_view")
+            .commit()
     }
 
     override fun onDestroy() {
         Log.i("fragment_lifecycle", "citiesFragment#onDestroy")
         super.onDestroy()
-        paginationRecyclerView.onDestroy()
+        if (this::paginationRecyclerView.isInitialized) {
+            paginationRecyclerView.onDestroy()
+        }
     }
 }

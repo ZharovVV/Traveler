@@ -20,7 +20,7 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
     @Inject
     internal lateinit var cityDataRepository: CityDataRepository
 
-    //Не список из-за кейса: запрос данных -> поворот экрана (после пересоздания запрос повторяется)
+    //Не список из-за кейса: запрос данных -> поворот экрана (после пересоздания запрос повторяется UPD: больше нет)
     // -> приходит ответ на первый запрос, затем приходит второй запрос с такими же данными
     private val currentCityWidgetSet: MutableSet<Widget> = mutableSetOf()
     private val onDataLoadingCompletedConsumer: (List<City>) -> Unit =
@@ -66,9 +66,5 @@ class CitiesPresenter : BasePresenter<CitiesMvpView>() {
                 }
             ).keep()
         viewState.showLoadingIndicator()
-    }
-
-    fun onClickCity(cityWidget: Widget) {
-        viewState.openCity(cityWidget)
     }
 }

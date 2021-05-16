@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.arellomobile.mvp.MvpDelegate
 
 abstract class AndroidXMvpAppCompatFragment : Fragment() {
@@ -84,13 +85,19 @@ abstract class AndroidXMvpAppCompatFragment : Fragment() {
             return mMvpDelegate!!
         }
 
-    @SuppressLint("DefaultLocale")
     fun <F : AndroidXMvpAppCompatFragment> F.transitionTo(rootContainer: ViewGroup, fragment: F) {
+        prepareTransitionTo(rootContainer, fragment)
+            .commit()
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun <F : AndroidXMvpAppCompatFragment> F.prepareTransitionTo(
+        rootContainer: ViewGroup,
+        fragment: F
+    ): FragmentTransaction {
         val fragmentTag: String = fragment.javaClass.simpleName.decapitalize()
-        this.requireFragmentManager().beginTransaction()
-//            .setCustomAnimations()
+        return this.requireFragmentManager().beginTransaction()
             .replace(rootContainer.id, fragment, fragmentTag)
             .addToBackStack(null)
-            .commit()
     }
 }
