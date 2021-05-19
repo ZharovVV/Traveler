@@ -34,7 +34,6 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("fragment_lifecycle", "cityMapFragment($this)#onCreate")
         Log.i("fragment_lifecycle", "presenter $cityMapPresenter")
         sharedElementEnterTransition = TransitionInflater.from(requireContext())
             .inflateTransition(R.transition.shared_image)
@@ -97,8 +96,4 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
         }
     }
 
-    override fun onDestroy() {
-        Log.i("fragment_lifecycle", "cityMapFragment($this)#onDestroy")
-        super.onDestroy()
-    }
 }

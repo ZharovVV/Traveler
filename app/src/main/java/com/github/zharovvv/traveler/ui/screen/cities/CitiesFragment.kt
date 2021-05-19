@@ -27,7 +27,6 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("fragment_lifecycle", "citiesFragment#onCreate")  //TODO delete me
         Log.i("fragment_lifecycle", "presenter $citiesPresenter")  //TODO delete me
     }
 
@@ -57,7 +56,8 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
         paginationRecyclerView.addOnNewPageRequiredListener { page ->
             citiesPresenter.loadNewCities(page.lastItem, page.limit)
         }
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && !isRestoredFromBackStack) {
+            Log.i("Moxy", "citiesPresenter#initLoad")
             citiesPresenter.initLoad()
         }
         view.doOnPreDraw { startPostponedEnterTransition() }
@@ -97,7 +97,6 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
     }
 
     override fun onDestroy() {
-        Log.i("fragment_lifecycle", "citiesFragment#onDestroy")
         super.onDestroy()
         if (this::paginationRecyclerView.isInitialized) {
             paginationRecyclerView.onDestroy()
