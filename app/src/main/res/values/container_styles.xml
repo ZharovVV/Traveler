@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="rounded_corners_style">
+        <item name="android:background">@drawable/rounded_corners_background</item>
+    </style>
+</resources>

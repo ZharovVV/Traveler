@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.transition.TransitionInflater
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -31,12 +32,13 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
     private lateinit var rootContainer: ViewGroup
     private lateinit var cityImageView: ImageView
     private lateinit var cityNameTextView: TextView
+    private lateinit var backButtonCard: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("fragment_lifecycle", "presenter $cityMapPresenter")
         sharedElementEnterTransition = TransitionInflater.from(requireContext())
-            .inflateTransition(R.transition.shared_image)
+            .inflateTransition(R.transition.transition_shared_image)
     }
 
     override fun onCreateView(
@@ -46,16 +48,20 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
     ): View? {
         Log.i("fragment_lifecycle", "cityMapFragment($this)#onCreateView")
         container?.let { rootContainer = it }
-        return inflater.inflate(R.layout.fragment_city_map, container, false)
+        return inflater.inflate(R.layout.fragment_city_map_start, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.i("fragment_lifecycle", "cityMapFragment($this)#onViewCreated")
-        cityImageView = view.findViewById(R.id.city_image_view)
+        cityImageView = view.findViewById(R.id.image_toolbar)
         ViewCompat.setTransitionName(cityImageView, "city_image_view")
-        cityNameTextView = view.findViewById(R.id.city_name_text_view)
+        cityNameTextView = view.findViewById(R.id.title_toolbar)
         if (savedInstanceState == null) {
             cityMapPresenter.initLoad(sourceCityWidget)
+        }
+        backButtonCard = view.findViewById(R.id.back_button)
+        backButtonCard.setOnClickListener {
+            requireFragmentManager().popBackStack()
         }
         postponeEnterTransition()
     }
@@ -63,9 +69,9 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
     override fun bindCityMap(cityMapWidget: Widget) {
         Log.i("Moxy", "CityMapMvpView#bindCityMap")
         cityNameTextView.text = cityMapWidget.title
-        cityMapWidget.imageUrl?.let {
+        if (cityMapWidget.imageUrl != null) {
             Glide.with(cityImageView)
-                .load(it)
+                .load(cityMapWidget.imageUrl)
                 .apply {
                     RequestOptions().dontTransform()
                 }
@@ -93,6 +99,8 @@ class CityMapFragment : AndroidXMvpAppCompatFragment(), CityMapMvpView {
 
                 })
                 .into(cityImageView)
+        } else {
+            startPostponedEnterTransition()
         }
     }
 

@@ -14,6 +14,7 @@ abstract class AndroidXMvpAppCompatFragment : Fragment() {
     private var mIsRestoredFromBackStack: Boolean = false
     val isRestoredFromBackStack get() = mIsRestoredFromBackStack
 
+    //Не вызывается при восстановлении фрагмена из back stack-а
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i("fragment_lifecycle", "$this#onCreate")
         super.onCreate(savedInstanceState)
