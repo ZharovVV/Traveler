@@ -34,15 +34,16 @@ class AdapterDelegatesManager<BaseItemType : DelegateBaseItemType> {
         delegate.onBindViewHolder(holder, item)
     }
 
-    //some magic or crutch
-    fun areItemsTheSame(
-        oldItem: BaseItemType,
-        newItem: BaseItemType
+    //some magic (*crutch)
+    fun <OldItem : BaseItemType, NewItem : BaseItemType> areItemsTheSame(
+        oldItem: OldItem,
+        newItem: NewItem
     ): Boolean {
         if (oldItem.delegateViewType == newItem.delegateViewType) {
             val delegate: AdapterDelegate<out BaseItemType> =
                 delegatesMap[getItemViewType(oldItem)] ?: throw NoSuchElementException()
-            delegate as AdapterDelegate<BaseItemType>
+            delegate as AdapterDelegate<OldItem>
+            newItem as OldItem
             return delegate.diffUtilItemCallback.areItemsTheSame(oldItem, newItem)
         }
         return false

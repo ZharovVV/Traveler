@@ -60,6 +60,7 @@ class PaginationRecyclerView<Item> @JvmOverloads constructor(
         initLoadingIndicator()
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                //TODO Подхакать адаптер (дергать новую пачку данных на onBindViewHolder)
                 val lastVisibleItemPosition = getLastVisibleItemPosition()
                 val currentAdapter =
                     adapter ?: throw IllegalArgumentException("Adapter is not defined!")
