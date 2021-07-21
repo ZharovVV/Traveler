@@ -54,6 +54,7 @@ class CityListAdapter(
                 Glide.with(imageView)
                     .load(it)
                     .into(imageView)
+
             }
             ViewCompat.setTransitionName(imageView, cityWidget.id)
         }
