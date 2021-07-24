@@ -23,7 +23,6 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
     private lateinit var paginationRecyclerView: PaginationRecyclerView<Widget>
     private lateinit var cityListAdapter: CityListAdapter
     private lateinit var rootContainer: ViewGroup
-    private val cityMapFragment: CityMapFragment = CityMapFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +88,7 @@ class CitiesFragment : AndroidXMvpAppCompatFragment(),
     }
 
     private fun openCity(cityWidget: Widget, sharedElement: View) {
+        val cityMapFragment = CityMapFragment()
         cityMapFragment.sourceCityWidget = cityWidget
         prepareTransitionTo(rootContainer, cityMapFragment)
             .setReorderingAllowed(true)
